@@ -11,9 +11,9 @@ app.use(helmet());
 app.use(cors());
 
 app.use(function validateBearerToken(req, res, next) {
-  const bearerToken = req.get('Authorization') ? req.get('Authorization').split(' ')[1] : null;
+  const bearerToken = req.get('Authorization') ? req.get('Authorization') : '';
   const apiToken = process.env.API_TOKEN;
-  if (!req.get('Authorization').startsWith('Bearer') || bearerToken !== apiToken) {
+  if (!bearerToken.startsWith('Bearer') || bearerToken.split(' ')[1] !== apiToken) {
     return res.status(400).json({ error: 'Not authorized to view' });
   } else {
     next();
