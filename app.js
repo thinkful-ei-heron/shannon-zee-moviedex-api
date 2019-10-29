@@ -13,7 +13,7 @@ app.use(cors());
 app.use(function validateBearerToken(req, res, next) {
   const bearerToken = req.get('Authorization') ? req.get('Authorization').split(' ')[1] : null;
   const apiToken = process.env.API_TOKEN;
-  if (bearerToken !== apiToken) {
+  if (!req.get('Authorization').startsWith('Bearer') || bearerToken !== apiToken) {
     return res.status(400).json({ error: 'Not authorized to view' });
   } else {
     next();
@@ -24,7 +24,7 @@ app.use(function validateBearerToken(req, res, next) {
 app.get('/movie', (req, res) => {
   const filteredMovies = movies;
   const { genre, country, avg_vote} = req.query;
-  
+
   if('genre' in req.query && !req.query.genre){
     return res.status(400).json({error: 'Genre search field must contain value'});
   }
