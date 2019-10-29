@@ -22,19 +22,37 @@ app.use(function validateBearerToken(req, res, next) {
 
 
 app.get('/movie', (req, res) => {
-  const filteredMovies = movies;
+  let filteredMovies = movies;
   const { genre, country, avg_vote} = req.query;
 
   if('genre' in req.query && !req.query.genre){
-    return res.status(400).json({error: 'Genre search field must contain value'});
+    return res.status(400).json({error: 'Genre search field must contain a value'});
   }
   if('country' in req.query && !req.query.country){
-    return res.status(400).json({error: 'Country search field must contain value'});
+    return res.status(400).json({error: 'Country search field must contain a value'});
   }
   if('avg_vote' in req.query && !req.query.avg_vote){
-    return res.status(400).json({error: 'Average Vote search field must contain value'});
+    return res.status(400).json({error: 'Average Vote search field must contain a value'});
+  }
+  
+  if(genre) {
+    filteredMovies = filteredMovies.filter(movie => movie.genre.toLowerCase().includes(genre.toLowerCase()));
+  }
+  if(country) {
+    filteredMovies = filteredMovies.filter(movie => movie.country.toLowerCase().includes(country.toLowerCase()));
+  }
+  if(avg_vote){
+    const vote = parseFloat(avg_vote);
+    if(isNaN(avg_vote)){
+      return res.status(400).json({error:'avg_vote must be a number'});
+    }
+    filteredMovies = filteredMovies.filter(movie => movie.avg_vote > avg_vote);
   }
 
+  if(filteredMovies.length === 0) {
+    return res.status(400).json({error: 'Sorry, unable to find a movie with those search specifications'});
+  }
+  
   return res.json(filteredMovies);
 });
 
