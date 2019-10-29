@@ -42,7 +42,7 @@ app.get('/movie', (req, res) => {
     filteredMovies = filteredMovies.filter(movie => movie.country.toLowerCase().includes(country.toLowerCase()));
   }
   if (avg_vote) {
-    const vote = parseFloat(avg_vote);
+    const vote = Number(avg_vote);
     if (isNaN(avg_vote)) {
       return res.status(400).json({ error: 'avg_vote must be a number'});
     }
